@@ -8,8 +8,16 @@ const Mytextinput = (props) => {
         marginLeft: 35,
         marginRight: 35,
         marginTop: 10,
-        borderColor: '#00AD98',
-        borderWidth: 1,
+
+
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.26,
+        shadowRadius: 32.14,
+        elevation: 2,
       }}>
       <TextInput
         underlineColorAndroid="transparent"

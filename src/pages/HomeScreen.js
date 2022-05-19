@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, SafeAreaView } from 'react-native';
-import MyImageButton from './components/MyImageButton';
-import { DatabaseConnection } from '../database/database-connection';
-import { Text, StyleSheet, ScrollView, Image, TextInput, Button, TouchableOpacity } from 'react-native'
+import { Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
-import Pie from "react-native-pie"
+import { PieChart } from 'react-native-chart-kit';
 
 
 import CarteraIco from "./../../images/ico/cartera.png"
@@ -14,19 +12,11 @@ import InfoIco from "./../../images/ico/info.png"
 import PerfilIco from "./../../images/ico/perfil.png"
 
 import logo from "../../images/logo.png"
-import BackIco from "../../images/BackIco.png"
-const db = DatabaseConnection.getConnection();
-
-const Data = [
-  { percentage: 40, color: "#adfdea" },
-  { percentage: 40, color: "#a00dea" },
-  { percentage: 20, color: "#3a0df0" },
-]
-
 
 const HomeScreen = ({ navigation }) => {
-  var Total = "000.00";
-
+  var Total = 1000;
+  var consumido = 100;
+  var totalAux = Total - consumido;
 
 
   return (
@@ -51,7 +41,7 @@ const HomeScreen = ({ navigation }) => {
           {/* buttons */}
           <View style={{ alignSelf: 'center', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             <View>
-              <TouchableOpacity onPress={() => { console.log("a"); }}>
+              <TouchableOpacity onPress={() => { navigation.navigate('INGRESOS') }} >
                 <LinearGradient
                   colors={['#1E7B1C', '#1A4D19']}
                   style={{ alignItems: 'center', justifyContent: 'center', margin: 5, height: 50, width: 175 }}>
@@ -61,7 +51,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
 
             <View>
-              <TouchableOpacity onPress={() => { console.log("a"); }}>
+              <TouchableOpacity onPress={() => { navigation.navigate('EGRESOS') }} >
                 <LinearGradient
                   colors={['#951717', '#6B2828']}
                   style={{ alignItems: 'center', justifyContent: 'center', margin: 5, height: 50, width: 175 }}>
@@ -72,27 +62,49 @@ const HomeScreen = ({ navigation }) => {
           </View>
 
           {/* grafica */}
-          <View>
-            <Pie
-              sections={Data}
-              radius={80}
-              innerRadius={60}
-            />
+          <View style={styles.content2}>
+            <Text style={{ fontSize: 24, textAlign: "center", fontWeight: "700" }}>GRAFICA DE GASTOS</Text>
+            <View style={{ alignItems: "center", marginVertical: 10 }}>
+              <View style={{ marginLeft: 220 }}>
+                <PieChart
+                  data={[
+                    {
+                      population: totalAux,
+                      color: '#BEBEBE',
+                    },
+                    {
+                      population: consumido,
+                      color: '#25252D',
+                    },
+
+                  ]}
+                  width={500}
+                  height={300}
+                  chartConfig={{
+                    decimalPlaces: 2,
+                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    style: {
+                      marginLeft: 'auto', marginRight: 'auto', left: 0, right: 0
+                    },
+                  }}
+                  style={{ marginLeft: 'auto', marginRight: 'auto', left: 0, right: 0 }}
+                  accessor="population"
+                  backgroundColor="transparent"
+                  paddingLeft="15"
+                  hasLegend={false}
+                  absolute
+                />
+              </View>
+              <View style={styles.circle} />
+            </View>
+
+
+            <View style={{ alignItems: "center" }}>
+              <Text style={{ fontSize: 32, fontWeight: "800", color: "#1D6A1B" }}>AHORROS: ${totalAux}</Text>
+            </View>
+
           </View>
-
-
-
-
-
-
-          {/* <View style={{ flex: 1 }}>
-
-              <MyImageButton
-                title="Registrar Usuário"
-                btnColor='#2992C4'
-                btnIcon="user-plus"
-                customClick={() => navigation.navigate('Register')}
-              />
+          {/* 
 
               <MyImageButton
                 title="Atualizar Usuário"
@@ -124,23 +136,24 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </ScrollView>
       <View style={styles.navbar}>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('GASTOS')}>
           <Image source={CarteraIco} style={styles.iconos} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Ejercicios')}>
+          onPress={() => navigation.navigate('HISTORIAL')}>
           <Image source={HistorialIco} style={styles.iconos} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Informacion')}>
+          onPress={() => navigation.navigate('INFORMACION')}>
           <Image source={InfoIco} style={styles.iconos} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Historial')}>
+          onPress={() => navigation.navigate('PERFIL')}>
           <Image source={PerfilIco} style={styles.iconos} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Login')}>
+          onPress={() => navigation.navigate('CONFIGURACION')}>
           <Image source={ConfigIco} style={styles.iconos} />
         </TouchableOpacity>
       </View>
@@ -204,5 +217,37 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#615858",
     padding: 10,
-  }
+  },
+  circle: {
+    height: 190,
+    width: 190,
+    borderRadius: 360,
+    backgroundColor: "#fff",
+    position: "absolute",
+    alignContent: "center",
+    margin: "auto",
+    marginTop: 55,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.46,
+    shadowRadius: 11.14,
+    elevation: 7,
+  },
+  content2: {
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    marginVertical: 20,
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.46,
+    shadowRadius: 11.14,
+    elevation: 7,
+  },
 })
